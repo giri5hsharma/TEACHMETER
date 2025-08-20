@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { 
+  SignedIn, 
+  SignedOut, 
+  SignInButton, 
+  SignUpButton, 
+  UserButton,
+  useUser
+} from '@clerk/clerk-react';
 
 function GettingStartedPage() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -8,7 +16,23 @@ function GettingStartedPage() {
   const [showAuthForm, setShowAuthForm] = useState(false);
   const [isFirstYear, setIsFirstYear] = useState(false);
   const [authType, setAuthType] = useState(null); // 'new' or 'returning'
+  const [showDisclaimer, setShowDisclaimer] = useState(true);
   const navigate = useNavigate();
+  const { user } = useUser();
+
+  const handleDisclaimerAccept = () => {
+    setShowDisclaimer(false);
+  };
+
+  useEffect(() => {
+    // If user is signed in, redirect to a dashboard or show welcome message
+    if (user) {
+      setShowAuthForm(false);
+      setShowWizard(false);
+      // For now, just log the user info
+      console.log('User signed in:', user);
+    }
+  }, [user]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -23,7 +47,99 @@ function GettingStartedPage() {
   }, []);
 
   return (
-    <div style={{ minHeight: '100vh', background: 'linear-gradient(120deg, #1A1A2E 0%, #2D1B69 100%)', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ 
+      minHeight: '100vh', 
+      background: 'linear-gradient(120deg, #1A1A2E 0%, #2D1B69 100%)', 
+      display: 'flex', 
+      flexDirection: 'column',
+      WebkitFontSmoothing: 'antialiased',
+      MozOsxFontSmoothing: 'grayscale'
+    }}>
+      {/* Disclaimer Modal */}
+      {showDisclaimer && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          background: 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          zIndex: 9999,
+          padding: '2rem'
+        }}>
+          <div style={{
+            background: 'linear-gradient(135deg, #1A1A2E 0%, #2D1B69 100%)',
+            borderRadius: '20px',
+            padding: '3rem',
+            maxWidth: '600px',
+            width: '100%',
+            textAlign: 'center',
+            border: '2px solid rgba(168,85,247,0.3)',
+            boxShadow: '0 25px 50px rgba(0,0,0,0.5)'
+          }}>
+            <div style={{
+              fontSize: '3rem',
+              marginBottom: '1.5rem'
+            }}>
+              ⚠️
+            </div>
+            
+            <h2 style={{
+              color: '#E8D5FF',
+              fontSize: '2rem',
+              fontWeight: 'bold',
+              marginBottom: '1.5rem',
+              textShadow: '0 2px 10px rgba(0,0,0,0.3)'
+            }}>
+              Community Guidelines
+            </h2>
+            
+            <p style={{
+              color: '#E8D5FF',
+              fontSize: '1.1rem',
+              lineHeight: '1.6',
+              marginBottom: '2rem',
+              opacity: 0.9
+            }}>
+              TeachMeter is committed to maintaining a respectful learning environment. 
+              <strong style={{ color: '#A855F7' }}> This platform does not condone posting demeaning, hateful, or inappropriate messages towards teachers.</strong>
+              <br /><br />
+              Reviews should be constructive and focused on teaching quality, course content, and learning experience. 
+              <strong style={{ color: '#EF4444' }}> Accounts found violating these guidelines will be permanently banned.</strong>
+            </p>
+            
+            <button
+              onClick={handleDisclaimerAccept}
+              style={{
+                background: 'linear-gradient(135deg, #A855F7 0%, #D946EF 100%)',
+                color: 'white',
+                border: 'none',
+                borderRadius: '12px',
+                padding: '1rem 2rem',
+                fontSize: '1.1rem',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                boxShadow: '0 8px 25px rgba(168,85,247,0.4)'
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.transform = 'translateY(-2px)';
+                e.target.style.boxShadow = '0 12px 35px rgba(168,85,247,0.6)';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.transform = 'translateY(0)';
+                e.target.style.boxShadow = '0 8px 25px rgba(168,85,247,0.4)';
+              }}
+            >
+              I Understand & Agree
+            </button>
+          </div>
+        </div>
+      )}
+      
       {/* Navbar - Always visible */}
       <nav style={{
         position: 'fixed',
@@ -51,26 +167,18 @@ function GettingStartedPage() {
               cursor: 'pointer',
               fontWeight: 700,
               fontSize: '1.1rem',
-              background: 'linear-gradient(90deg, #A855F7 0%, #D946EF 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
+              color: '#A855F7',
               transition: 'all 0.3s ease',
               padding: '0.5rem 1rem',
               borderRadius: '0.5rem',
             }}
             onClick={() => navigate('/')}
             onMouseEnter={(e) => {
-              e.target.style.background = 'linear-gradient(90deg, #D946EF 0%, #FDE047 100%)';
-              e.target.style.WebkitBackgroundClip = 'text';
-              e.target.style.WebkitTextFillColor = 'transparent';
-              e.target.style.transform = 'translateY(-3px) scale(1.05)';
+              e.target.style.color = '#D946EF';
               e.target.style.boxShadow = '0 8px 25px rgba(168,85,247,0.4), 0 4px 12px rgba(217,70,239,0.3)';
             }}
             onMouseLeave={(e) => {
-              e.target.style.background = 'linear-gradient(90deg, #A855F7 0%, #D946EF 100%)';
-              e.target.style.WebkitBackgroundClip = 'text';
-              e.target.style.WebkitTextFillColor = 'transparent';
-              e.target.style.transform = 'translateY(0) scale(1)';
+              e.target.style.color = '#A855F7';
               e.target.style.boxShadow = 'none';
             }}
           >
@@ -95,50 +203,66 @@ function GettingStartedPage() {
                 onMouseEnter={(e) => {
                   e.target.style.background = 'rgba(168,85,247,0.2)';
                   e.target.style.color = '#D946EF';
-                  e.target.style.transform = 'translateY(-2px)';
                 }}
                 onMouseLeave={(e) => {
                   e.target.style.background = 'transparent';
                   e.target.style.color = '#E8D5FF';
-                  e.target.style.transform = 'translateY(0)';
                 }}
               >
                 {item}
               </div>
             ))}
+            
+            {/* User Profile Picture - Only show when signed in */}
+            <SignedIn>
+              <div style={{ marginLeft: '0.5rem' }}>
+                <UserButton 
+                  appearance={{
+                    elements: {
+                      avatarBox: {
+                        width: '2.5rem',
+                        height: '2.5rem'
+                      }
+                    }
+                  }}
+                />
+              </div>
+            </SignedIn>
           </div>
         </nav>
       
       <main style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '3.5rem 1.2rem 0 1.2rem' }}>
-        <h1 style={{
-          fontSize: '3.2rem',
-          fontWeight: 900,
-          background: 'linear-gradient(90deg, #FDE047 0%, #D946EF 40%, #A855F7 100%)',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-          textAlign: 'center',
-          marginBottom: '1.2rem',
-          textShadow: '0 0 18px #A855F755',
-        }}>
-          Welcome to TeachMeter
-        </h1>
-        
-        <p style={{ color: '#E8D5FF', fontSize: '1.25rem', textAlign: 'center', maxWidth: 600, marginBottom: '2.5rem', fontWeight: 500 }}>
-          Start exploring professor reviews, ratings, and insights from your fellow students. Find the perfect match for your academic journey.
-        </p>
-
         {/* Main Action Widgets */}
         {!showWizard && !showFirstYearMessage && !showAuthForm && (
-          <div style={{
-            display: 'flex',
-            gap: '4rem',
-            marginBottom: '3rem',
-            width: '100%',
-            maxWidth: 1000,
-            justifyContent: 'center',
-            alignItems: 'stretch',
-            flexWrap: 'nowrap',
-          }}>
+          <>
+            <h1 style={{
+              fontSize: '3.2rem',
+              fontWeight: 900,
+              background: 'linear-gradient(135deg, #FF8A65 0%, #F06292 25%, #BA68C8 50%, #9C27B0 75%, #7B1FA2 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+              textAlign: 'center',
+              marginBottom: '1.2rem',
+              textShadow: 'none',
+            }}>
+              Welcome to TeachMeter
+            </h1>
+            
+            <p style={{ color: '#E8D5FF', fontSize: '1.25rem', textAlign: 'center', maxWidth: 600, marginBottom: '2.5rem', fontWeight: 500 }}>
+              Start exploring professor reviews, ratings, and insights from your fellow students. Find the perfect match for your academic journey.
+            </p>
+
+            <div style={{
+              display: 'flex',
+              gap: '4rem',
+              marginBottom: '3rem',
+              width: '100%',
+              maxWidth: 1000,
+              justifyContent: 'center',
+              alignItems: 'stretch',
+              flexWrap: 'nowrap',
+            }}>
             {/* Looking for Reviews Widget */}
             <ActionWidget 
               icon={
@@ -170,11 +294,18 @@ function GettingStartedPage() {
               text="Share your experience and help fellow students make informed decisions about their course selections."
               buttonText="Post Review"
               onClick={() => {
-                setShowWizard(true);
+                if (user) {
+                  // User is signed in, redirect to review editor
+                  navigate('/review-editor');
+                } else {
+                  // User is not signed in, show wizard
+                  setShowWizard(true);
+                }
               }}
               disabled={isFirstYear}
             />
-          </div>
+            </div>
+          </>
         )}
 
         {/* First Year Message */}
@@ -234,7 +365,7 @@ function GettingStartedPage() {
             marginBottom: '3rem',
             width: '100%',
           }}>
-            <AuthFormWidget 
+            <ClerkAuthWidget 
               userType={authType}
               onBack={() => {
                 setShowAuthForm(false);
@@ -245,112 +376,99 @@ function GettingStartedPage() {
                 setShowAuthForm(false);
                 setAuthType(null);
               }}
-              onComplete={(userData) => {
-                setShowAuthForm(false);
-                // Handle successful authentication
-                console.log('User authenticated:', userData);
-              }}
             />
           </div>
         )}
+
       </main>
-      
-      <footer style={{ marginTop: 'auto', padding: '2.5rem 0 1.2rem', textAlign: 'center', color: '#D946EF', fontSize: '1rem', letterSpacing: '0.01em' }}>
-        &copy; {new Date().getFullYear()} TeachMeter
-      </footer>
     </div>
   );
 }
 
-// ActionWidget component similar to FeatureWidget but for main actions
+// ActionWidget for the main action cards
 function ActionWidget({ icon, title, text, buttonText, onClick, disabled }) {
   const [hovered, setHovered] = useState(false);
-  
+
   return (
     <div
       style={{
-        background: disabled 
-          ? 'rgba(42,32,78,0.5)' 
-          : hovered 
-            ? 'linear-gradient(90deg, rgba(168,85,247,0.25) 0%, rgba(217,70,239,0.25) 100%)'
-            : 'rgba(42,32,78,0.92)',
+        background: hovered 
+          ? 'rgba(168,85,247,0.18)' 
+          : 'rgba(42,32,78,0.85)',
         borderRadius: '1.1rem',
-        boxShadow: disabled 
-          ? '0 2px 8px rgba(168,85,247,0.05)'
-          : hovered
-            ? '0 6px 20px rgba(168,85,247,0.3), 0 3px 10px rgba(217,70,239,0.25)'
-            : '0 2px 8px rgba(168,85,247,0.10)',
-        padding: '2.8rem 2.5rem',
-        minWidth: 380,
-        maxWidth: 450,
-        flex: '1 1 380px',
+        padding: '3rem 2.5rem',
+        textAlign: 'center',
         cursor: disabled ? 'not-allowed' : 'pointer',
-        transition: 'all 0.3s ease',
-        transform: disabled 
-          ? 'none' 
-          : hovered 
-            ? 'translateY(-2px) scale(1.03)' 
-            : 'translateY(0) scale(1)',
-        border: disabled 
-          ? '1.5px solid rgba(168,85,247,0.2)' 
-          : hovered 
-            ? '1.5px solid #D946EF' 
-            : '1.5px solid transparent',
-        color: disabled ? 'rgba(232,213,255,0.5)' : '#E8D5FF',
+        border: hovered && !disabled 
+          ? '1.5px solid rgba(168,85,247,0.5)' 
+          : '1.5px solid rgba(168,85,247,0.2)',
+        transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+        boxShadow: hovered && !disabled 
+          ? '0 12px 30px rgba(168,85,247,0.25), 0 0 20px rgba(217,70,239,0.15)' 
+          : '0 6px 20px rgba(0, 0, 0, 0.25)',
+        flex: 1,
+        maxWidth: 400,
+        minHeight: 320,
         display: 'flex',
         flexDirection: 'column',
-        alignItems: 'center',
-        margin: '0.2rem',
-        overflow: 'visible',
+        justifyContent: 'space-between',
+        opacity: disabled ? 0.5 : 1,
         position: 'relative',
-        zIndex: hovered && !disabled ? 10 : 1,
-        opacity: disabled ? 0.6 : 1,
+        overflow: 'hidden',
       }}
       onMouseEnter={() => !disabled && setHovered(true)}
       onMouseLeave={() => !disabled && setHovered(false)}
     >
-      <div style={{ marginBottom: 22, opacity: disabled ? 0.5 : 1 }}>{icon}</div>
-      <div style={{ fontWeight: 700, fontSize: '1.35rem', color: disabled ? 'rgba(232,213,255,0.5)' : '#E8D5FF', marginBottom: 14, textAlign: 'center' }}>{title}</div>
-      <div style={{ fontSize: '1.1rem', color: disabled ? 'rgba(232,213,255,0.4)' : '#E8D5FF', opacity: disabled ? 0.6 : 0.92, marginBottom: 24, textAlign: 'center', lineHeight: 1.5 }}>{text}</div>
-      {disabled && (
-        <div style={{ fontSize: '0.9rem', color: '#D946EF', marginBottom: 16, textAlign: 'center', fontStyle: 'italic' }}>
-          Available for 2nd year+ students
+      <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%' }}>
+        <div>
+          <div style={{ marginBottom: '1.5rem' }}>
+            {icon}
+          </div>
+          <h3 style={{ fontSize: '1.6rem', fontWeight: 700, color: '#E8D5FF', marginBottom: '1rem' }}>
+            {title}
+          </h3>
+          <p style={{ fontSize: '1.1rem', color: '#E8D5FF', opacity: 0.9, marginBottom: '2rem', lineHeight: 1.5 }}>
+            {text}
+          </p>
         </div>
-      )}
-      <button 
-        style={{
-          background: disabled 
-            ? 'rgba(168,85,247,0.3)' 
-            : 'linear-gradient(90deg, #A855F7 0%, #D946EF 100%)',
-          color: disabled ? 'rgba(26,26,46,0.7)' : '#1A1A2E',
-          padding: '0.8rem 1.8rem',
-          borderRadius: '0.6rem',
-          fontWeight: 600,
-          fontSize: '1rem',
-          border: 'none',
-          cursor: disabled ? 'not-allowed' : 'pointer',
-          transition: 'all 0.3s ease',
-          marginTop: 'auto',
-          opacity: disabled ? 0.7 : 1,
-        }}
-        onMouseEnter={(e) => {
-          if (!disabled) {
-            e.target.style.transform = 'translateY(-2px) scale(1.05)';
-            e.target.style.boxShadow = '0 6px 20px rgba(168,85,247,0.4), 0 3px 10px rgba(217,70,239,0.3)';
-            e.target.style.background = 'linear-gradient(90deg, #D946EF 0%, #FDE047 100%)';
-          }
-        }}
-        onMouseLeave={(e) => {
-          if (!disabled) {
-            e.target.style.transform = 'translateY(0) scale(1)';
-            e.target.style.boxShadow = 'none';
-            e.target.style.background = 'linear-gradient(90deg, #A855F7 0%, #D946EF 100%)';
-          }
-        }}
-        onClick={disabled ? undefined : onClick}
-      >
-        {buttonText}
-      </button>
+        
+        <button
+          style={{
+            background: disabled
+              ? 'rgba(100,100,100,0.3)'
+              : hovered
+              ? 'linear-gradient(90deg, #D946EF 0%, #FDE047 100%)'
+              : 'linear-gradient(90deg, #A855F7 0%, #D946EF 100%)',
+            color: disabled ? 'rgba(255,255,255,0.5)' : '#1A1A2E',
+            padding: '1rem 2rem',
+            borderRadius: '0.8rem',
+            border: 'none',
+            fontWeight: 700,
+            fontSize: '1.1rem',
+            cursor: disabled ? 'not-allowed' : 'pointer',
+            transition: 'all 0.3s ease',
+            width: '100%',
+            boxShadow: disabled ? 'none' : hovered 
+              ? '0 6px 20px rgba(168,85,247,0.4)' 
+              : '0 4px 15px rgba(168,85,247,0.25)',
+          }}
+          onMouseEnter={(e) => {
+            if (!disabled) {
+              e.target.style.boxShadow = '0 8px 25px rgba(168,85,247,0.5)';
+              e.target.style.background = 'linear-gradient(90deg, #D946EF 0%, #FDE047 100%)';
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (!disabled) {
+              e.target.style.boxShadow = 'none';
+              e.target.style.background = 'linear-gradient(90deg, #A855F7 0%, #D946EF 100%)';
+            }
+          }}
+          onClick={disabled ? undefined : onClick}
+        >
+          {buttonText}
+        </button>
+      </div>
     </div>
   );
 }
@@ -447,73 +565,62 @@ function WizardWidget({ onFirstYear, onOlderYear, onCancel }) {
             ))}
           </div>
           
-          {selectedYear && (
-            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-              <button 
-                style={{
-                  background: 'rgba(168,85,247,0.1)',
-                  color: '#E8D5FF',
-                  padding: '0.8rem 1.5rem',
-                  borderRadius: '0.6rem',
-                  fontWeight: 600,
-                  fontSize: '1rem',
-                  border: '2px solid rgba(168,85,247,0.3)',
-                  cursor: 'pointer',
-                  transition: 'all 0.3s ease',
-                }}
-                onMouseEnter={(e) => {
-                  e.target.style.background = 'rgba(168,85,247,0.2)';
-                  e.target.style.borderColor = '#A855F7';
-                }}
-                onMouseLeave={(e) => {
-                  e.target.style.background = 'rgba(168,85,247,0.1)';
-                  e.target.style.borderColor = 'rgba(168,85,247,0.3)';
-                }}
-                onClick={onCancel}
-              >
-                Cancel
-              </button>
-              
-              <button 
-                style={{
-                  background: 'linear-gradient(90deg, #D946EF 0%, #FDE047 100%)',
-                  color: '#1A1A2E',
-                  padding: '0.8rem 2rem',
-                  borderRadius: '0.6rem',
-                  fontWeight: 600,
-                  fontSize: '1rem',
-                  border: 'none',
-                  cursor: 'pointer',
-                  transition: 'all 0.3s ease',
-                  opacity: selectedYear ? 1 : 0,
-                  transform: selectedYear ? 'translateY(0)' : 'translateY(10px)',
-                }}
-                onMouseEnter={(e) => {
-                  e.target.style.transform = 'translateY(-2px) scale(1.05)';
-                  e.target.style.boxShadow = '0 6px 20px rgba(217,70,239,0.4)';
-                }}
-                onMouseLeave={(e) => {
-                  e.target.style.transform = 'translateY(0) scale(1)';
-                  e.target.style.boxShadow = 'none';
-                }}
-                onClick={handleYearContinue}
-              >
-                Continue
-              </button>
-            </div>
-          )}
+          <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+            <button
+              style={{
+                background: selectedYear 
+                  ? 'linear-gradient(90deg, #A855F7 0%, #D946EF 100%)' 
+                  : 'rgba(168,85,247,0.3)',
+                color: selectedYear ? '#1A1A2E' : '#E8D5FF',
+                padding: '0.8rem 2rem',
+                borderRadius: '0.6rem',
+                border: 'none',
+                fontWeight: 600,
+                fontSize: '1rem',
+                cursor: selectedYear ? 'pointer' : 'not-allowed',
+                transition: 'all 0.3s ease',
+                opacity: selectedYear ? 1 : 0.6,
+              }}
+              onClick={selectedYear ? handleYearContinue : undefined}
+              disabled={!selectedYear}
+            >
+              Continue
+            </button>
+            
+            <button
+              style={{
+                background: 'rgba(239,68,68,0.2)',
+                color: '#FCA5A5',
+                padding: '0.8rem 2rem',
+                borderRadius: '0.6rem',
+                border: '2px solid rgba(239,68,68,0.3)',
+                fontWeight: 600,
+                fontSize: '1rem',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.background = 'rgba(239,68,68,0.3)';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.background = 'rgba(239,68,68,0.2)';
+              }}
+              onClick={onCancel}
+            >
+              Cancel
+            </button>
+          </div>
         </>
       )}
-
+      
       {currentStep === 'userType' && (
         <>
           <div style={{ marginBottom: 20 }}>
             <svg width="60" height="60" fill="none" stroke="#A855F7" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-              <path d="M9 12l2 2 4-4"/>
-              <path d="M21 12c.552 0 1-.448 1-1s-.448-1-1-1-1 .448-1 1 .448 1 1 1z"/>
-              <path d="M3 12c.552 0 1-.448 1-1s-.448-1-1-1-1 .448-1 1 .448 1 1 1z"/>
-              <path d="M12 21c.552 0 1-.448 1-1s-.448-1-1-1-1 .448-1 1 .448 1 1 1z"/>
-              <path d="M12 3c.552 0 1-.448 1-1s-.448-1-1-1-1 .448-1 1 .448 1 1 1z"/>
+              <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="8.5" cy="7" r="4"/>
+              <path d="M20 8v6"/>
+              <path d="M23 11h-6"/>
             </svg>
           </div>
           
@@ -522,118 +629,326 @@ function WizardWidget({ onFirstYear, onOlderYear, onCancel }) {
           </h3>
           
           <p style={{ fontSize: '1.1rem', color: '#E8D5FF', opacity: 0.9, marginBottom: '2rem', textAlign: 'center', lineHeight: 1.5 }}>
-            This helps us customize your onboarding experience.
+            This helps us provide the right authentication flow for you.
           </p>
           
-          <div style={{ display: 'flex', gap: '1.5rem', marginBottom: '2rem', flexDirection: 'column', width: '100%', maxWidth: '400px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2rem', width: '100%' }}>
             {[
-              { key: 'new', label: 'New User', desc: "I'm new to TeachMeter" },
-              { key: 'returning', label: 'Returning User', desc: "I've used TeachMeter before" }
+              { value: 'new', label: 'New User', desc: 'Create a new account on TeachMeter' },
+              { value: 'returning', label: 'Returning User', desc: 'Already have an account' }
             ].map((userType, index) => (
               <button
                 key={index}
                 style={{
-                  background: selectedUserType === userType.key 
+                  background: selectedUserType === userType.value 
                     ? 'linear-gradient(90deg, #A855F7 0%, #D946EF 100%)' 
                     : 'rgba(168,85,247,0.1)',
-                  color: selectedUserType === userType.key ? '#1A1A2E' : '#E8D5FF',
-                  padding: '1.2rem 1.5rem',
+                  color: selectedUserType === userType.value ? '#1A1A2E' : '#E8D5FF',
+                  padding: '1.2rem',
                   borderRadius: '0.8rem',
                   fontWeight: 600,
                   fontSize: '1.1rem',
-                  border: selectedUserType === userType.key ? 'none' : '2px solid rgba(168,85,247,0.3)',
+                  border: selectedUserType === userType.value ? 'none' : '2px solid rgba(168,85,247,0.3)',
                   cursor: 'pointer',
                   transition: 'all 0.3s ease',
                   textAlign: 'left',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'flex-start',
+                  width: '100%',
                 }}
-                onMouseEnter={(e) => {
-                  if (selectedUserType !== userType.key) {
-                    e.target.style.background = 'rgba(168,85,247,0.2)';
-                    e.target.style.borderColor = '#A855F7';
+                onMouseOver={(e) => {
+                  if (selectedUserType !== userType.value) {
+                    e.currentTarget.style.background = 'rgba(168,85,247,0.2)';
+                    e.currentTarget.style.borderColor = '#A855F7';
                   }
                 }}
-                onMouseLeave={(e) => {
-                  if (selectedUserType !== userType.key) {
-                    e.target.style.background = 'rgba(168,85,247,0.1)';
-                    e.target.style.borderColor = 'rgba(168,85,247,0.3)';
+                onMouseOut={(e) => {
+                  if (selectedUserType !== userType.value) {
+                    e.currentTarget.style.background = 'rgba(168,85,247,0.1)';
+                    e.currentTarget.style.borderColor = 'rgba(168,85,247,0.3)';
                   }
                 }}
-                onClick={() => setSelectedUserType(userType.key)}
+                onClick={() => setSelectedUserType(userType.value)}
               >
-                <div style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '0.3rem' }}>
-                  {userType.label}
-                </div>
-                <div style={{ 
-                  fontSize: '0.95rem', 
-                  opacity: selectedUserType === userType.key ? 0.8 : 0.7,
-                  fontWeight: 400
-                }}>
+                <div style={{ fontWeight: 'bold', marginBottom: '0.5rem' }}>{userType.label}</div>
+                <div style={{ fontSize: '0.9rem', opacity: selectedUserType === userType.value ? 0.8 : 0.7 }}>
                   {userType.desc}
                 </div>
               </button>
             ))}
           </div>
           
-          <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-            <button 
+          <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+            <button
               style={{
-                background: 'rgba(168,85,247,0.1)',
+                background: 'rgba(168,85,247,0.2)',
                 color: '#E8D5FF',
-                padding: '0.8rem 1.5rem',
+                padding: '0.8rem 2rem',
                 borderRadius: '0.6rem',
+                border: '2px solid rgba(168,85,247,0.3)',
                 fontWeight: 600,
                 fontSize: '1rem',
-                border: '2px solid rgba(168,85,247,0.3)',
                 cursor: 'pointer',
                 transition: 'all 0.3s ease',
               }}
               onMouseEnter={(e) => {
-                e.target.style.background = 'rgba(168,85,247,0.2)';
-                e.target.style.borderColor = '#A855F7';
+                e.target.style.background = 'rgba(168,85,247,0.3)';
               }}
               onMouseLeave={(e) => {
-                e.target.style.background = 'rgba(168,85,247,0.1)';
-                e.target.style.borderColor = 'rgba(168,85,247,0.3)';
+                e.target.style.background = 'rgba(168,85,247,0.2)';
               }}
-              onClick={() => {
-                setCurrentStep('year');
-                setSelectedUserType(null);
-              }}
+              onClick={() => setCurrentStep('year')}
             >
-              Back
+              ← Back
             </button>
             
-            <button 
+            <button
               style={{
-                background: 'rgba(168,85,247,0.1)',
-                color: '#E8D5FF',
-                padding: '0.8rem 1.5rem',
+                background: selectedUserType 
+                  ? 'linear-gradient(90deg, #A855F7 0%, #D946EF 100%)' 
+                  : 'rgba(168,85,247,0.3)',
+                color: selectedUserType ? '#1A1A2E' : '#E8D5FF',
+                padding: '0.8rem 2rem',
                 borderRadius: '0.6rem',
+                border: 'none',
                 fontWeight: 600,
                 fontSize: '1rem',
-                border: '2px solid rgba(168,85,247,0.3)',
+                cursor: selectedUserType ? 'pointer' : 'not-allowed',
+                transition: 'all 0.3s ease',
+                opacity: selectedUserType ? 1 : 0.6,
+              }}
+              onClick={selectedUserType ? handleUserTypeContinue : undefined}
+              disabled={!selectedUserType}
+            >
+              Continue
+            </button>
+            
+            <button
+              style={{
+                background: 'rgba(239,68,68,0.2)',
+                color: '#FCA5A5',
+                padding: '0.8rem 2rem',
+                borderRadius: '0.6rem',
+                border: '2px solid rgba(239,68,68,0.3)',
+                fontWeight: 600,
+                fontSize: '1rem',
                 cursor: 'pointer',
                 transition: 'all 0.3s ease',
               }}
               onMouseEnter={(e) => {
-                e.target.style.background = 'rgba(168,85,247,0.2)';
-                e.target.style.borderColor = '#A855F7';
+                e.target.style.background = 'rgba(239,68,68,0.3)';
               }}
               onMouseLeave={(e) => {
-                e.target.style.background = 'rgba(168,85,247,0.1)';
-                e.target.style.borderColor = 'rgba(168,85,247,0.3)';
+                e.target.style.background = 'rgba(239,68,68,0.2)';
               }}
               onClick={onCancel}
             >
               Cancel
             </button>
-            
-            {selectedUserType && (
-              <button 
-                style={{
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+// FirstYearMessageWidget for first-year students
+function FirstYearMessageWidget({ onContinue, onBack }) {
+  return (
+    <div style={{
+      background: 'rgba(42,32,78,0.92)',
+      borderRadius: '1.1rem',
+      boxShadow: '0 4px 16px rgba(168,85,247,0.15)',
+      padding: '3rem 2.5rem',
+      minWidth: 500,
+      maxWidth: 600,
+      border: '1.5px solid rgba(168,85,247,0.3)',
+      color: '#E8D5FF',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      textAlign: 'center',
+    }}>
+      <div style={{ marginBottom: '2rem' }}>
+        <svg width="80" height="80" fill="none" stroke="#FDE047" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+          <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+          <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+        </svg>
+      </div>
+      
+      <h3 style={{ fontSize: '2rem', fontWeight: 700, color: '#FDE047', marginBottom: '1.5rem' }}>
+        Welcome to College! 🎓
+      </h3>
+      
+      <p style={{ fontSize: '1.2rem', color: '#E8D5FF', opacity: 0.95, marginBottom: '2rem', lineHeight: 1.6 }}>
+        As a first-year student, we recommend <strong>exploring reviews first</strong> to get familiar with different teaching styles and course expectations before posting your own reviews.
+      </p>
+      
+      <div style={{
+        background: 'rgba(253,224,71,0.1)',
+        border: '2px solid rgba(253,224,71,0.3)',
+        borderRadius: '0.8rem',
+        padding: '1.5rem',
+        marginBottom: '2rem'
+      }}>
+        <p style={{ color: '#FDE047', margin: 0, fontSize: '1.1rem', fontWeight: 600, marginBottom: '0.5rem' }}>
+          💡 Pro Tips for First Years:
+        </p>
+        <ul style={{ color: '#E8D5FF', margin: 0, fontSize: '1rem', textAlign: 'left', paddingLeft: '1.2rem' }}>
+          <li style={{ marginBottom: '0.5rem' }}>Read reviews to understand professor expectations</li>
+          <li style={{ marginBottom: '0.5rem' }}>Look for teaching style preferences that match yours</li>
+          <li style={{ marginBottom: '0.5rem' }}>Note course difficulty and workload insights</li>
+          <li>Come back to share your experiences later!</li>
+        </ul>
+      </div>
+      
+      <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+        <button
+          style={{
+            background: 'rgba(168,85,247,0.2)',
+            color: '#E8D5FF',
+            padding: '0.8rem 2rem',
+            borderRadius: '0.6rem',
+            border: '2px solid rgba(168,85,247,0.3)',
+            fontWeight: 600,
+            fontSize: '1rem',
+            cursor: 'pointer',
+            transition: 'all 0.3s ease',
+          }}
+          onMouseEnter={(e) => {
+            e.target.style.background = 'rgba(168,85,247,0.3)';
+          }}
+          onMouseLeave={(e) => {
+            e.target.style.background = 'rgba(168,85,247,0.2)';
+          }}
+          onClick={onBack}
+        >
+          ← Back
+        </button>
+        
+        <button
+          style={{
+            background: 'linear-gradient(90deg, #FDE047 0%, #D946EF 100%)',
+            color: '#1A1A2E',
+            padding: '0.8rem 2rem',
+            borderRadius: '0.6rem',
+            border: 'none',
+            fontWeight: 700,
+            fontSize: '1rem',
+            cursor: 'pointer',
+            transition: 'all 0.3s ease',
+          }}
+          onMouseEnter={(e) => {
+            e.target.style.boxShadow = '0 6px 20px rgba(253,224,71,0.4)';
+          }}
+          onMouseLeave={(e) => {
+            e.target.style.boxShadow = 'none';
+          }}
+          onClick={onContinue}
+        >
+          Explore Reviews 🔍
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ClerkAuthWidget using Clerk authentication
+function ClerkAuthWidget({ userType, onBack, onCancel }) {
+  const { user } = useUser();
+
+  useEffect(() => {
+    if (user) {
+      console.log('User authenticated:', user);
+      console.log('ClerkAuthWidget: User is signed in, should show signed-in version');
+    } else {
+      console.log('ClerkAuthWidget: User is NOT signed in, should show sign-in forms');
+    }
+  }, [user]);
+
+  return (
+    <div style={{
+      background: 'rgba(42,32,78,0.92)',
+      borderRadius: '1.2rem',
+      boxShadow: '0 4px 20px rgba(168,85,247,0.2)',
+      padding: '2.5rem',
+      width: '100%',
+      maxWidth: '500px',
+      border: '2px solid rgba(168,85,247,0.3)',
+      textAlign: 'center'
+    }}>
+      <SignedOut>
+        <div style={{ marginBottom: '2rem' }}>
+          <h2 style={{ 
+            color: '#FDE047', 
+            marginBottom: '0.5rem', 
+            fontSize: '1.8rem',
+            fontWeight: 'bold'
+          }}>
+            {userType === 'new' ? '🎓 Create Your Account' : '🔑 Welcome Back'}
+          </h2>
+          <p style={{ color: '#E8D5FF', margin: 0, fontSize: '1rem', opacity: 0.9 }}>
+            {userType === 'new' 
+              ? 'Join TeachMeter and start your academic journey' 
+              : 'Sign in to continue where you left off'
+            }
+          </p>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          {/* Main action buttons with Back and Cancel in same row */}
+          <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+            <button
+              onClick={onBack}
+              style={{
+                background: 'rgba(168,85,247,0.1)',
+                color: '#E8D5FF',
+                padding: '0.8rem 1.5rem',
+                borderRadius: '0.6rem',
+                fontWeight: 600,
+                fontSize: '1rem',
+                border: '2px solid rgba(168,85,247,0.3)',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.background = 'rgba(168,85,247,0.2)';
+                e.target.style.borderColor = '#A855F7';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.background = 'rgba(168,85,247,0.1)';
+                e.target.style.borderColor = 'rgba(168,85,247,0.3)';
+              }}
+            >
+              Back
+            </button>
+
+            <button
+              onClick={onCancel}
+              style={{
+                background: 'rgba(168,85,247,0.1)',
+                color: '#E8D5FF',
+                padding: '0.8rem 1.5rem',
+                borderRadius: '0.6rem',
+                fontWeight: 600,
+                fontSize: '1rem',
+                border: '2px solid rgba(168,85,247,0.3)',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.background = 'rgba(168,85,247,0.2)';
+                e.target.style.borderColor = '#A855F7';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.background = 'rgba(168,85,247,0.1)';
+                e.target.style.borderColor = 'rgba(168,85,247,0.3)';
+              }}
+            >
+              Cancel
+            </button>
+
+            {userType === 'new' ? (
+              <SignUpButton mode="modal" forceRedirectUrl="/getting-started">
+                <button style={{
                   background: 'linear-gradient(90deg, #D946EF 0%, #FDE047 100%)',
                   color: '#1A1A2E',
                   padding: '0.8rem 2rem',
@@ -643,529 +958,106 @@ function WizardWidget({ onFirstYear, onOlderYear, onCancel }) {
                   border: 'none',
                   cursor: 'pointer',
                   transition: 'all 0.3s ease',
-                  opacity: selectedUserType ? 1 : 0,
-                  transform: selectedUserType ? 'translateY(0)' : 'translateY(10px)',
-                }}
-                onMouseEnter={(e) => {
-                  e.target.style.transform = 'translateY(-2px) scale(1.05)';
-                  e.target.style.boxShadow = '0 6px 20px rgba(217,70,239,0.4)';
-                }}
-                onMouseLeave={(e) => {
-                  e.target.style.transform = 'translateY(0) scale(1)';
-                  e.target.style.boxShadow = 'none';
-                }}
-                onClick={handleUserTypeContinue}
-              >
-                Continue
-              </button>
+                  flex: 1,
+                }}>
+                  Create Account
+                </button>
+              </SignUpButton>
+            ) : (
+              <SignInButton mode="modal" forceRedirectUrl="/getting-started">
+                <button style={{
+                  background: 'linear-gradient(90deg, #D946EF 0%, #FDE047 100%)',
+                  color: '#1A1A2E',
+                  padding: '0.8rem 2rem',
+                  borderRadius: '0.6rem',
+                  fontWeight: 600,
+                  fontSize: '1rem',
+                  border: 'none',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  flex: 1,
+                }}>
+                  Sign In
+                </button>
+              </SignInButton>
             )}
           </div>
-        </>
-      )}
-    </div>
-  );
-}
-
-// FirstYearMessageWidget for displaying first year restrictions
-function FirstYearMessageWidget({ onContinue, onBack }) {
-  return (
-    <div style={{
-      background: 'linear-gradient(135deg, rgba(168,85,247,0.1) 0%, rgba(217,70,239,0.1) 100%)',
-      borderRadius: '1.2rem',
-      boxShadow: '0 4px 20px rgba(168,85,247,0.2), 0 2px 10px rgba(217,70,239,0.15)',
-      padding: '3rem 2.5rem',
-      maxWidth: 550,
-      width: '100%',
-      border: '2px solid rgba(168,85,247,0.3)',
-      color: '#E8D5FF',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      textAlign: 'center',
-    }}>
-      <div style={{ marginBottom: '1.5rem', fontSize: '3rem' }}>
-        📚
-      </div>
-      
-      <h3 style={{ 
-        fontSize: '1.8rem', 
-        fontWeight: 700, 
-        color: '#E8D5FF', 
-        marginBottom: '1.5rem',
-        background: 'linear-gradient(90deg, #A855F7 0%, #D946EF 100%)',
-        WebkitBackgroundClip: 'text',
-        WebkitTextFillColor: 'transparent',
-      }}>
-        Welcome, First Year!
-      </h3>
-      
-      <div style={{ 
-        fontSize: '1.2rem', 
-        color: '#E8D5FF', 
-        opacity: 0.9, 
-        marginBottom: '1.5rem', 
-        lineHeight: 1.6 
-      }}>
-        As a first-year student, you can browse and read all professor reviews to help with course planning.
-      </div>
-      
-      <div style={{ 
-        background: 'rgba(217,70,239,0.15)',
-        borderRadius: '0.8rem',
-        padding: '1.5rem',
-        marginBottom: '2rem',
-        border: '1px solid rgba(217,70,239,0.3)',
-      }}>
-        <div style={{ 
-          fontSize: '1.1rem', 
-          color: '#D946EF', 
-          fontWeight: 600,
-          marginBottom: '0.5rem'
-        }}>
-          📝 Posting Reviews
         </div>
-        <div style={{ 
-          fontSize: '1rem', 
-          color: '#E8D5FF', 
-          opacity: 0.8,
-          lineHeight: 1.5
-        }}>
-          Review posting is available for 2nd year+ students who have completed courses and can provide valuable insights to fellow students.
+
+        {/* Toggle between sign in and sign up - moved to bottom */}
+        <div style={{ marginTop: '1.5rem', textAlign: 'center' }}>
+          <span style={{ color: '#E8D5FF', opacity: 0.8, fontSize: '0.9rem' }}>
+            {userType === 'new' ? 'Already have an account?' : "Don't have an account?"}
+          </span>
+          {userType === 'new' ? (
+            <SignInButton mode="modal" forceRedirectUrl="/getting-started">
+              <button style={{
+                background: 'none',
+                border: 'none',
+                color: '#D946EF',
+                fontWeight: 600,
+                cursor: 'pointer',
+                marginLeft: '0.5rem',
+                fontSize: '0.9rem',
+                textDecoration: 'underline',
+              }}>
+                Sign In
+              </button>
+            </SignInButton>
+          ) : (
+            <SignUpButton mode="modal" forceRedirectUrl="/getting-started">
+              <button style={{
+                background: 'none',
+                border: 'none',
+                color: '#D946EF',
+                fontWeight: 600,
+                cursor: 'pointer',
+                marginLeft: '0.5rem',
+                fontSize: '0.9rem',
+                textDecoration: 'underline',
+              }}>
+                Sign Up
+              </button>
+            </SignUpButton>
+          )}
         </div>
-      </div>
-      
-      <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-        <button 
-          style={{
-            background: 'rgba(168,85,247,0.1)',
-            color: '#E8D5FF',
-            padding: '1rem 1.5rem',
-            borderRadius: '0.8rem',
-            fontWeight: 600,
-            fontSize: '1.1rem',
-            border: '2px solid rgba(168,85,247,0.3)',
-            cursor: 'pointer',
-            transition: 'all 0.3s ease',
-          }}
-          onMouseEnter={(e) => {
-            e.target.style.background = 'rgba(168,85,247,0.2)';
-            e.target.style.borderColor = '#A855F7';
-          }}
-          onMouseLeave={(e) => {
-            e.target.style.background = 'rgba(168,85,247,0.1)';
-            e.target.style.borderColor = 'rgba(168,85,247,0.3)';
-          }}
-          onClick={onBack}
-        >
-          Back
-        </button>
-        
-        <button 
-          style={{
-            background: 'linear-gradient(90deg, #A855F7 0%, #D946EF 100%)',
-            color: '#1A1A2E',
-            padding: '1rem 2.5rem',
-            borderRadius: '0.8rem',
-            fontWeight: 600,
-            fontSize: '1.1rem',
-            border: 'none',
-            cursor: 'pointer',
-            transition: 'all 0.3s ease',
-          }}
-          onMouseEnter={(e) => {
-            e.target.style.transform = 'translateY(-2px) scale(1.05)';
-            e.target.style.boxShadow = '0 6px 20px rgba(168,85,247,0.4), 0 3px 10px rgba(217,70,239,0.3)';
-            e.target.style.background = 'linear-gradient(90deg, #D946EF 0%, #FDE047 100%)';
-          }}
-          onMouseLeave={(e) => {
-            e.target.style.transform = 'translateY(0) scale(1)';
-            e.target.style.boxShadow = 'none';
-            e.target.style.background = 'linear-gradient(90deg, #A855F7 0%, #D946EF 100%)';
-          }}
-          onClick={onContinue}
-        >
-          Continue Browsing
-        </button>
-      </div>
-    </div>
-  );
-}
+      </SignedOut>
 
-// AuthFormWidget for login/signup
-function AuthFormWidget({ userType, onBack, onCancel, onComplete }) {
-  const [isSignUp, setIsSignUp] = useState(userType === 'new');
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    university: 'SIT, Pune',
-    major: '',
-    year: ''
-  });
-  const [showPassword, setShowPassword] = useState(false);
+      {/* Show UserButton when already signed in */}
+      <SignedIn>
+        <div style={{ marginBottom: '2rem' }}>
+          <h2 style={{ 
+            color: '#10B981', 
+            marginBottom: '1rem', 
+            fontSize: '1.8rem',
+            fontWeight: 'bold'
+          }}>
+            ✅ You're Already Signed In!
+          </h2>
+          <p style={{ color: '#E8D5FF', margin: 0, fontSize: '1rem', opacity: 0.9, marginBottom: '2rem' }}>
+            You're already authenticated. You can manage your account or continue exploring.
+          </p>
+        </div>
 
-  useEffect(() => {
-    // Component mounted
-  }, []);
-
-  const handleInputChange = (field, value) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    
-    // Basic validation
-    if (isSignUp && formData.password !== formData.confirmPassword) {
-      alert('Passwords do not match');
-      return;
-    }
-    
-    // Handle form submission
-    onComplete(formData);
-  };
-
-  const handleGoogleAuth = () => {
-    // Handle Google authentication
-    console.log('Google auth for:', isSignUp ? 'Sign Up' : 'Sign In');
-    onComplete({ method: 'google', userType });
-  };
-
-  return (
-    <div style={{
-      background: 'rgba(42,32,78,0.92)',
-      borderRadius: '1.2rem',
-      boxShadow: '0 4px 20px rgba(168,85,247,0.2)',
-      padding: '3rem 2.5rem',
-      maxWidth: 500,
-      width: '100%',
-      border: '2px solid rgba(168,85,247,0.3)',
-      color: '#E8D5FF',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-    }}>
-      <div style={{ marginBottom: '1.5rem', fontSize: '2.5rem' }}>
-        {isSignUp ? '🎯' : '👋'}
-      </div>
-      
-      <h3 style={{ 
-        fontSize: '1.8rem', 
-        fontWeight: 700, 
-        color: '#E8D5FF', 
-        marginBottom: '0.5rem',
-        textAlign: 'center'
-      }}>
-        {isSignUp ? 'Create Your Account' : 'Welcome Back'}
-      </h3>
-      
-      <p style={{ 
-        fontSize: '1rem', 
-        color: '#E8D5FF', 
-        opacity: 0.8, 
-        marginBottom: '2rem', 
-        textAlign: 'center' 
-      }}>
-        {isSignUp 
-          ? 'Join TeachMeter to start posting and sharing your experiences' 
-          : 'Sign in to access your account and continue where you left off'
-        }
-      </p>
-
-      {/* Google Sign In/Up Button */}
-      <button
-        onClick={handleGoogleAuth}
-        style={{
-          background: '#fff',
-          color: '#333',
-          border: '2px solid #ddd',
-          borderRadius: '0.8rem',
-          padding: '0.9rem 1.5rem',
-          fontSize: '1rem',
-          fontWeight: 600,
-          cursor: 'pointer',
-          transition: 'all 0.3s ease',
-          marginBottom: '1.5rem',
-          width: '100%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '0.5rem',
-        }}
-        onMouseEnter={(e) => {
-          e.target.style.background = '#f8f9fa';
-          e.target.style.borderColor = '#A855F7';
-        }}
-        onMouseLeave={(e) => {
-          e.target.style.background = '#fff';
-          e.target.style.borderColor = '#ddd';
-        }}
-      >
-        <svg width="20" height="20" viewBox="0 0 24 24">
-          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-        </svg>
-        {isSignUp ? 'Sign up with Google' : 'Sign in with Google'}
-      </button>
-
-      <div style={{ 
-        display: 'flex', 
-        alignItems: 'center', 
-        width: '100%', 
-        marginBottom: '1.5rem' 
-      }}>
-        <div style={{ flex: 1, height: '1px', background: 'rgba(168,85,247,0.3)' }}></div>
-        <span style={{ margin: '0 1rem', fontSize: '0.9rem', opacity: 0.7 }}>or</span>
-        <div style={{ flex: 1, height: '1px', background: 'rgba(168,85,247,0.3)' }}></div>
-      </div>
-
-      {/* Form */}
-      <form onSubmit={handleSubmit} style={{ width: '100%' }}>
-        {isSignUp && (
-          <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
-            <input
-              type="text"
-              placeholder="First Name"
-              value={formData.firstName}
-              onChange={(e) => handleInputChange('firstName', e.target.value)}
-              required
-              style={{
-                flex: 1,
-                padding: '0.8rem',
-                borderRadius: '0.6rem',
-                border: '2px solid rgba(168,85,247,0.3)',
-                background: 'rgba(168,85,247,0.1)',
-                color: '#E8D5FF',
-                fontSize: '1rem',
-                outline: 'none',
-                transition: 'all 0.3s ease',
-              }}
-              onFocus={(e) => {
-                e.target.style.borderColor = '#A855F7';
-              }}
-              onBlur={(e) => {
-                e.target.style.borderColor = 'rgba(168,85,247,0.3)';
-              }}
-            />
-            <input
-              type="text"
-              placeholder="Last Name"
-              value={formData.lastName}
-              onChange={(e) => handleInputChange('lastName', e.target.value)}
-              required
-              style={{
-                flex: 1,
-                padding: '0.8rem',
-                borderRadius: '0.6rem',
-                border: '2px solid rgba(168,85,247,0.3)',
-                background: 'rgba(168,85,247,0.1)',
-                color: '#E8D5FF',
-                fontSize: '1rem',
-                outline: 'none',
-                transition: 'all 0.3s ease',
-              }}
-              onFocus={(e) => {
-                e.target.style.borderColor = '#A855F7';
-              }}
-              onBlur={(e) => {
-                e.target.style.borderColor = 'rgba(168,85,247,0.3)';
-              }}
-            />
-          </div>
-        )}
-
-        <input
-          type="email"
-          placeholder="Email Address"
-          value={formData.email}
-          onChange={(e) => handleInputChange('email', e.target.value)}
-          required
-          style={{
-            width: '100%',
-            padding: '0.8rem',
-            borderRadius: '0.6rem',
-            border: '2px solid rgba(168,85,247,0.3)',
-            background: 'rgba(168,85,247,0.1)',
-            color: '#E8D5FF',
-            fontSize: '1rem',
-            marginBottom: '1rem',
-            outline: 'none',
-            transition: 'all 0.3s ease',
-            boxSizing: 'border-box',
-          }}
-          onFocus={(e) => {
-            e.target.style.borderColor = '#A855F7';
-          }}
-          onBlur={(e) => {
-            e.target.style.borderColor = 'rgba(168,85,247,0.3)';
-          }}
-        />
-
-        <div style={{ position: 'relative', marginBottom: '1rem' }}>
-          <input
-            type={showPassword ? 'text' : 'password'}
-            placeholder="Password"
-            value={formData.password}
-            onChange={(e) => handleInputChange('password', e.target.value)}
-            required
-            style={{
-              width: '100%',
-              padding: '0.8rem',
-              paddingRight: '3rem',
-              borderRadius: '0.6rem',
-              border: '2px solid rgba(168,85,247,0.3)',
-              background: 'rgba(168,85,247,0.1)',
-              color: '#E8D5FF',
-              fontSize: '1rem',
-              outline: 'none',
-              transition: 'all 0.3s ease',
-              boxSizing: 'border-box',
-            }}
-            onFocus={(e) => {
-              e.target.style.borderColor = '#A855F7';
-            }}
-            onBlur={(e) => {
-              e.target.style.borderColor = 'rgba(168,85,247,0.3)';
+        <div style={{ marginBottom: '2rem' }}>
+          <UserButton 
+            appearance={{
+              elements: {
+                avatarBox: {
+                  width: '4rem',
+                  height: '4rem'
+                }
+              }
             }}
           />
-          <button
-            type="button"
-            onClick={() => setShowPassword(!showPassword)}
-            style={{
-              position: 'absolute',
-              right: '0.8rem',
-              top: '50%',
-              transform: 'translateY(-50%)',
-              background: 'none',
-              border: 'none',
-              color: '#A855F7',
-              cursor: 'pointer',
-              fontSize: '0.9rem',
-            }}
-          >
-            {showPassword ? '👁️' : '👁️‍🗨️'}
-          </button>
         </div>
 
-        {isSignUp && (
-          <>
-            <input
-              type={showPassword ? 'text' : 'password'}
-              placeholder="Confirm Password"
-              value={formData.confirmPassword}
-              onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
-              required
-              style={{
-                width: '100%',
-                padding: '0.8rem',
-                borderRadius: '0.6rem',
-                border: '2px solid rgba(168,85,247,0.3)',
-                background: 'rgba(168,85,247,0.1)',
-                color: '#E8D5FF',
-                fontSize: '1rem',
-                marginBottom: '1rem',
-                outline: 'none',
-                transition: 'all 0.3s ease',
-                boxSizing: 'border-box',
-              }}
-              onFocus={(e) => e.target.style.borderColor = '#A855F7'}
-              onBlur={(e) => e.target.style.borderColor = 'rgba(168,85,247,0.3)'}
-            />
-
-            <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
-              <input
-                type="text"
-                placeholder="University"
-                value={formData.university}
-                readOnly
-                style={{
-                  flex: 1,
-                  padding: '0.8rem',
-                  borderRadius: '0.6rem',
-                  border: '2px solid rgba(168,85,247,0.2)',
-                  background: 'rgba(168,85,247,0.05)',
-                  color: '#E8D5FF',
-                  fontSize: '1rem',
-                  outline: 'none',
-                  opacity: 0.8,
-                  cursor: 'not-allowed',
-                }}
-              />
-              <select
-                value={formData.major}
-                onChange={(e) => handleInputChange('major', e.target.value)}
-                required
-                style={{
-                  flex: 1,
-                  padding: '0.8rem',
-                  borderRadius: '0.6rem',
-                  border: '2px solid rgba(168,85,247,0.3)',
-                  background: 'rgba(168,85,247,0.1)',
-                  color: '#E8D5FF',
-                  fontSize: '1rem',
-                  outline: 'none',
-                  transition: 'all 0.3s ease',
-                }}
-                onFocus={(e) => {
-                  e.target.style.borderColor = '#A855F7';
-                }}
-                onBlur={(e) => {
-                  e.target.style.borderColor = 'rgba(168,85,247,0.3)';
-                }}
-              >
-                <option value="" disabled style={{ background: '#1A1A2E', color: '#E8D5FF' }}>Select Major</option>
-                <option value="AI & ML" style={{ background: '#1A1A2E', color: '#E8D5FF' }}>AI & ML</option>
-                <option value="Civil" style={{ background: '#1A1A2E', color: '#E8D5FF' }}>Civil</option>
-                <option value="Computer Science" style={{ background: '#1A1A2E', color: '#E8D5FF' }}>Computer Science</option>
-                <option value="ENTC" style={{ background: '#1A1A2E', color: '#E8D5FF' }}>ENTC</option>
-                <option value="Mechanical" style={{ background: '#1A1A2E', color: '#E8D5FF' }}>Mechanical</option>
-                <option value="Natural Sciences" style={{ background: '#1A1A2E', color: '#E8D5FF' }}>Natural Sciences</option>
-                <option value="Robotics & Automation" style={{ background: '#1A1A2E', color: '#E8D5FF' }}>Robotics & Automation</option>
-              </select>
-            </div>
-
-            <select
-              value={formData.year}
-              onChange={(e) => handleInputChange('year', e.target.value)}
-              required
-              style={{
-                width: '100%',
-                padding: '0.8rem',
-                borderRadius: '0.6rem',
-                border: '2px solid rgba(168,85,247,0.3)',
-                background: 'rgba(168,85,247,0.1)',
-                color: '#E8D5FF',
-                fontSize: '1rem',
-                marginBottom: '1rem',
-                outline: 'none',
-                transition: 'all 0.3s ease',
-                boxSizing: 'border-box',
-              }}
-              onFocus={(e) => e.target.style.borderColor = '#A855F7'}
-              onBlur={(e) => e.target.style.borderColor = 'rgba(168,85,247,0.3)'}
-            >
-              <option value="" disabled style={{ background: '#1A1A2E', color: '#E8D5FF' }}>Select Year</option>
-              <option value="2nd Year" style={{ background: '#1A1A2E', color: '#E8D5FF' }}>2nd Year</option>
-              <option value="3rd Year" style={{ background: '#1A1A2E', color: '#E8D5FF' }}>3rd Year</option>
-              <option value="4th Year" style={{ background: '#1A1A2E', color: '#E8D5FF' }}>4th Year</option>
-              <option value="Graduate" style={{ background: '#1A1A2E', color: '#E8D5FF' }}>Graduate</option>
-            </select>
-          </>
-        )}
-
-        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginTop: '2rem' }}>
-          <button 
-            type="button"
+        {/* Navigation buttons */}
+        <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+          <button
             onClick={onBack}
             style={{
-              background: 'rgba(168,85,247,0.1)',
+              background: 'rgba(168,85,247,0.2)',
               color: '#E8D5FF',
               padding: '0.8rem 1.5rem',
               borderRadius: '0.6rem',
@@ -1176,91 +1068,39 @@ function AuthFormWidget({ userType, onBack, onCancel, onComplete }) {
               transition: 'all 0.3s ease',
             }}
             onMouseEnter={(e) => {
-              e.target.style.background = 'rgba(168,85,247,0.2)';
-              e.target.style.borderColor = '#A855F7';
+              e.target.style.background = 'rgba(168,85,247,0.3)';
             }}
             onMouseLeave={(e) => {
-              e.target.style.background = 'rgba(168,85,247,0.1)';
-              e.target.style.borderColor = 'rgba(168,85,247,0.3)';
+              e.target.style.background = 'rgba(168,85,247,0.2)';
             }}
           >
-            Back
+            ← Back to Wizard
           </button>
-
-          <button 
-            type="button"
+          
+          <button
             onClick={onCancel}
             style={{
-              background: 'rgba(168,85,247,0.1)',
-              color: '#E8D5FF',
+              background: 'rgba(239,68,68,0.2)',
+              color: '#FCA5A5',
               padding: '0.8rem 1.5rem',
               borderRadius: '0.6rem',
               fontWeight: 600,
               fontSize: '1rem',
-              border: '2px solid rgba(168,85,247,0.3)',
+              border: '2px solid rgba(239,68,68,0.3)',
               cursor: 'pointer',
               transition: 'all 0.3s ease',
             }}
             onMouseEnter={(e) => {
-              e.target.style.background = 'rgba(168,85,247,0.2)';
-              e.target.style.borderColor = '#A855F7';
+              e.target.style.background = 'rgba(239,68,68,0.3)';
             }}
             onMouseLeave={(e) => {
-              e.target.style.background = 'rgba(168,85,247,0.1)';
-              e.target.style.borderColor = 'rgba(168,85,247,0.3)';
+              e.target.style.background = 'rgba(239,68,68,0.2)';
             }}
           >
             Cancel
           </button>
-
-          <button 
-            type="submit"
-            style={{
-              background: 'linear-gradient(90deg, #D946EF 0%, #FDE047 100%)',
-              color: '#1A1A2E',
-              padding: '0.8rem 2rem',
-              borderRadius: '0.6rem',
-              fontWeight: 600,
-              fontSize: '1rem',
-              border: 'none',
-              cursor: 'pointer',
-              transition: 'all 0.3s ease',
-              flex: 1,
-            }}
-            onMouseEnter={(e) => {
-              e.target.style.transform = 'translateY(-2px) scale(1.02)';
-              e.target.style.boxShadow = '0 4px 15px rgba(217,70,239,0.4)';
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.transform = 'translateY(0) scale(1)';
-              e.target.style.boxShadow = 'none';
-            }}
-          >
-            {isSignUp ? 'Create Account' : 'Sign In'}
-          </button>
         </div>
-      </form>
-
-      <div style={{ marginTop: '1.5rem', textAlign: 'center' }}>
-        <span style={{ color: '#E8D5FF', opacity: 0.8, fontSize: '0.9rem' }}>
-          {isSignUp ? 'Already have an account?' : "Don't have an account?"}
-        </span>
-        <button
-          onClick={() => setIsSignUp(!isSignUp)}
-          style={{
-            background: 'none',
-            border: 'none',
-            color: '#D946EF',
-            fontWeight: 600,
-            cursor: 'pointer',
-            marginLeft: '0.5rem',
-            fontSize: '0.9rem',
-            textDecoration: 'underline',
-          }}
-        >
-          {isSignUp ? 'Sign In' : 'Sign Up'}
-        </button>
-      </div>
+      </SignedIn>
     </div>
   );
 }

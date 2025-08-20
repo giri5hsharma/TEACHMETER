@@ -4,6 +4,7 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import GettingStartedPage from './GettingStartedPage';
+import ReviewPostEditor from './ReviewPostEditor';
 
 function HomePage() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -243,6 +244,7 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/getting-started" element={<GettingStartedPage />} />
+        <Route path="/review-editor" element={<ReviewPostEditor />} />
       </Routes>
     </Router>
   );
